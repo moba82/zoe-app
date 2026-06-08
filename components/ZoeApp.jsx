@@ -259,19 +259,23 @@ export default function ZoeApp() {
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
           <div style={{ display: "flex", gap: 8 }}>
-            {[["zoe", "🐴 Zoe"], ["mom", "🌸 Mamma"]].map(([v, label]) => (
-              <button key={v} onClick={() => setView(v)} style={{
-                padding: "8px 18px", borderRadius: 20, border: "none",
-                background: view === v ? C.white : "rgba(255,255,255,0.35)",
-                color: view === v ? (v === "zoe" ? C.mintDeep : C.pinkDeep) : C.textDark,
-                fontWeight: 900, fontSize: 14, cursor: "pointer",
-                fontFamily: "'Nunito', sans-serif",
-                boxShadow: view === v ? "0 3px 10px rgba(0,0,0,0.12)" : "none",
-                transition: "all 0.25s",
-              }}>{label}</button>
-            ))}
+            <button onClick={() => setView("zoe")} style={{
+              padding: "8px 18px", borderRadius: 20, border: "none",
+              background: view === "zoe" ? C.white : "rgba(255,255,255,0.35)",
+              color: C.mintDeep, fontWeight: 900, fontSize: 14, cursor: "pointer",
+              fontFamily: "'Nunito', sans-serif",
+              boxShadow: view === "zoe" ? "0 3px 10px rgba(0,0,0,0.12)" : "none",
+              transition: "all 0.25s",
+            }}>🐴 Zoe</button>
           </div>
-          <span style={{ fontSize: 28 }}>🧋</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <button onClick={() => setView(view === "mom" ? "zoe" : "mom")} style={{
+              background: "transparent", border: "none", cursor: "pointer",
+              fontSize: 18, opacity: 0.35, padding: "4px 6px", lineHeight: 1,
+              color: "white",
+            }}>♡</button>
+            <span style={{ fontSize: 28 }}>🧋</span>
+          </div>
         </div>
         {view === "zoe" && (
           <div style={{ display: "flex" }}>
