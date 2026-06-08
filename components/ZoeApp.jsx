@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const C = {
   mintBg: "#E8F8F1", mintLight: "#C8EFD8", mint: "#A8DFC4",
@@ -221,6 +221,28 @@ export default function ZoeApp() {
   const [newTask, setNewTask] = useState("");
   const [emergencyOpen, setEmergencyOpen] = useState(false);
   const [emergencyMsg, setEmergencyMsg] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/tasks').then(r => r.json()),
+      fetch('/api/vacation').then(r => r.json()),
+    ]).then(([t, v]) => {
+      if (t?.length) setTasks(t);
+      setVacation(v.vacation);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, []);
+
+  const saveTasks = (newTasks) => {
+    setTasks(newTasks);
+    fetch('/api/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newTasks) });
+  };
+
+  const saveVacation = (val) => {
+    setVacation(val);
+    fetch('/api/vacation', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vacation: val }) });
+  };
 
   const done = tasks.filter(t => t.done).length;
   const total = tasks.length;
@@ -232,23 +254,29 @@ export default function ZoeApp() {
   const completeTask = (id) => {
     const t = tasks.find(t => t.id === id);
     if (!t || t.done) return;
-    setTasks(prev => prev.map(t => t.id === id
+    const updated = tasks.map(t => t.id === id
       ? { ...t, done: true, doneTime: new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" }) }
       : t
-    ));
+    );
+    saveTasks(updated);
     setConfetti(true);
     setTimeout(() => setConfetti(false), 2000);
   };
 
-  const removeTask = (id) => setTasks(prev => prev.filter(t => t.id !== id));
+  const removeTask = (id) => saveTasks(tasks.filter(t => t.id !== id));
   const addTask = () => {
     if (!newTask.trim()) return;
-    setTasks(prev => [...prev, { id: Date.now(), icon: "🐱", name: newTask.trim(), done: false, essential: false }]);
+    saveTasks([...tasks, { id: Date.now(), icon: "🐱", name: newTask.trim(), done: false, essential: false }]);
     setNewTask("");
   };
 
   return (
     <div style={{ fontFamily: "'Nunito', sans-serif", background: C.mintBg, minHeight: "100vh", maxWidth: 430, margin: "0 auto" }}>
+      {loading && (
+        <div style={{ position: "fixed", inset: 0, background: C.mintBg, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999, fontSize: 48 }}>
+          🧋
+        </div>
+      )}
       <ConfettiBlast active={confetti} />
 
       {/* HEADER */}
@@ -469,7 +497,7 @@ export default function ZoeApp() {
                 <div style={{ fontWeight: 900, fontSize: 16, color: C.textDark }}>{vacation ? "🏖️ Vacation Mode ATTIVO" : "🔒 Sistema blocco attivo"}</div>
                 <div style={{ fontSize: 12, color: C.textMed, marginTop: 3 }}>{vacation ? "Tutti i blocchi sono disattivati" : "Zoe deve completare i fondamentali"}</div>
               </div>
-              <Toggle value={vacation} onChange={setVacation} />
+              <Toggle value={vacation} onChange={saveVacation} />
             </div>
 
             <div style={{ background: C.white, borderRadius: 20, padding: "16px 20px", marginBottom: 16, boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}>
