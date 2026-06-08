@@ -251,7 +251,26 @@ export default function ZoeApp() {
   const [capyTitle, capyMsg] = CAPYMESSAGES(level, done, total);
   const capyMood = level === 100 ? "celebrating" : "neutral";
 
-  const completeTask = (id) => {
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+
+  const sendChat = async () => {
+    if (!chatInput.trim() || chatLoading) return;
+    const userMsg = { role: "user", content: chatInput };
+    const newMessages = [...chatMessages, userMsg];
+    setChatMessages(newMessages);
+    setChatInput("");
+    setChatLoading(true);
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: newMessages }),
+    });
+    const data = await res.json();
+    setChatMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+    setChatLoading(false);
+  };
     const t = tasks.find(t => t.id === id);
     if (!t || t.done) return;
     const updated = tasks.map(t => t.id === id
@@ -343,6 +362,40 @@ export default function ZoeApp() {
                 }}>
                   <div style={{ fontWeight: 900, fontSize: 14, color: C.mintDeep, marginBottom: 4 }}>{capyTitle}</div>
                   <div style={{ fontSize: 13, color: C.textMed, lineHeight: 1.5 }}>{capyMsg}</div>
+                </div>
+                {/* Messaggi chat */}
+                {chatMessages.length > 0 && (
+                  <div style={{ marginTop: 8, maxHeight: 160, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6 }}>
+                    {chatMessages.map((m, i) => (
+                      <div key={i} style={{
+                        alignSelf: m.role === "user" ? "flex-end" : "flex-start",
+                        background: m.role === "user" ? C.mintDark : C.white,
+                        color: m.role === "user" ? "white" : C.textDark,
+                        padding: "7px 12px", borderRadius: 14, fontSize: 13,
+                        maxWidth: "85%", border: m.role === "assistant" ? `1px solid ${C.mintLight}` : "none",
+                      }}>{m.content}</div>
+                    ))}
+                    {chatLoading && <div style={{ fontSize: 20, alignSelf: "flex-start" }}>🐱💭</div>}
+                  </div>
+                )}
+                {/* Input */}
+                <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                  <input
+                    value={chatInput}
+                    onChange={e => setChatInput(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && sendChat()}
+                    placeholder="Scrivi al coach..."
+                    style={{
+                      flex: 1, padding: "8px 12px", borderRadius: 12,
+                      border: `1.5px solid ${C.mintLight}`, outline: "none",
+                      fontFamily: "'Nunito', sans-serif", fontSize: 13,
+                    }}
+                  />
+                  <button onClick={sendChat} disabled={chatLoading} style={{
+                    padding: "8px 14px", borderRadius: 12, border: "none",
+                    background: C.mintDark, color: "white", fontWeight: 900,
+                    cursor: "pointer", fontSize: 16,
+                  }}>→</button>
                 </div>
                 <div style={{
                   position: "absolute", left: -10, top: 14, width: 0, height: 0,
