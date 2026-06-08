@@ -244,7 +244,14 @@ export default function ZoeApp() {
     fetch('/api/vacation', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vacation: val }) });
   };
 
-  const done = tasks.filter(t => t.done).length;
+  const [calEvents, setCalEvents] = useState([]);
+
+  useEffect(() => {
+    fetch(`/api/calendar?day=${day}`)
+      .then(r => r.json())
+      .then(setCalEvents)
+      .catch(() => {});
+  }, [day]);
   const total = tasks.length;
   const level = Math.round((done / total) * 100);
   const essentialsDone = tasks.filter(t => t.essential && !t.done).length === 0;
@@ -440,13 +447,13 @@ export default function ZoeApp() {
             </div>
 
             {/* CALENDARIO */}
-            {EVENTS.length > 0 && (
+            {calEvents.length > 0 && (
               <div style={{ marginBottom: 14 }}>
                 <div style={{ fontSize: 11, fontWeight: 800, color: C.textLight, textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 8 }}>
                   Oggi nel calendario
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {EVENTS.map((e, i) => (
+                  {calEvents.map((e, i) => (
                     <div key={i} style={{ background: C.pinkLight, borderRadius: 14, padding: "8px 14px", display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ fontSize: 22 }}>{e.icon}</span>
                       <div>
