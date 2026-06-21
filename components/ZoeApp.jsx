@@ -247,23 +247,24 @@ export default function ZoeApp(){
     return(
       <button onClick={()=>completeTask(task.id)} style={{
         background:task.done?`linear-gradient(135deg,${C.mint},${C.lav})`:C.white,
-        border:`2px solid ${task.done?C.mintDark:accent}`,borderRadius:14,padding:"10px 13px",
-        display:"flex",alignItems:"center",gap:10,cursor:task.done?"default":"pointer",
-        boxShadow:task.done?"none":`0 2px 12px ${accent}80`,transition:"all 0.3s",
+        border:`2px solid ${task.done?C.mintDark:accent}`,borderRadius:12,padding:"7px 9px",
+        display:"flex",alignItems:"center",gap:7,cursor:task.done?"default":"pointer",
+        boxShadow:task.done?"none":`0 2px 8px ${accent}60`,transition:"all 0.3s",
         textAlign:"left",width:"100%"}}>
-        <div style={{width:36,height:36,borderRadius:"50%",flexShrink:0,
+        <div style={{width:28,height:28,borderRadius:"50%",flexShrink:0,
           background:task.done?C.mintDark:accent,display:"flex",alignItems:"center",
-          justifyContent:"center",fontSize:task.done?16:19,color:task.done?C.white:"inherit"}}>
+          justifyContent:"center",fontSize:task.done?13:15,color:task.done?C.white:"inherit"}}>
           {task.done?"✓":task.icon}
         </div>
-        <div style={{flex:1}}>
-          <div style={{fontWeight:800,fontSize:14,color:task.done?C.textMed:C.textDark,
-            textDecoration:task.done?"line-through":"none"}}>{task.name}
-            {task.essential&&!task.done&&<span style={{fontSize:9,color:C.pinkDeep,marginLeft:5}}>⚡</span>}
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:800,fontSize:12,color:task.done?C.textMed:C.textDark,
+            textDecoration:task.done?"line-through":"none",
+            whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{task.name}
+            {task.essential&&!task.done&&<span style={{fontSize:8,color:C.pinkDeep,marginLeft:3}}>⚡</span>}
           </div>
-          {task.done&&task.doneTime&&<div style={{fontSize:10,color:C.mintDark,fontWeight:700}}>✓ {task.doneTime}</div>}
+          {task.done&&task.doneTime&&<div style={{fontSize:9,color:C.mintDark,fontWeight:700}}>✓ {task.doneTime}</div>}
+          {!task.done&&<div style={{fontSize:9,fontWeight:900,color:accent,marginTop:1}}>Fatto!</div>}
         </div>
-        {!task.done&&<div style={{background:accent,borderRadius:8,padding:"4px 10px",fontSize:11,fontWeight:900,color:C.textDark}}>Fatto!</div>}
       </button>
     );
   };
@@ -279,44 +280,52 @@ export default function ZoeApp(){
 
       {/* HEADER arcobaleno */}
       <div style={{background:"linear-gradient(135deg,#FFB8D5,#FFD5B0,#FFF5B0,#C8F5E0,#C8EEFF,#E8D0FF)",
-        padding:"16px 16px 0",borderRadius:"0 0 28px 28px",boxShadow:"0 4px 20px rgba(180,150,220,0.25)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-          <button onClick={()=>setView("zoe")} style={{padding:"7px 16px",borderRadius:20,border:"none",
-            background:view==="zoe"?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.45)",
-            color:C.lavDeep,fontWeight:900,fontSize:14,cursor:"pointer",fontFamily:"'Nunito',sans-serif"}}>🐴 Zoe</button>
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
+        padding:"10px 14px 0",borderRadius:"0 0 22px 22px",boxShadow:"0 4px 20px rgba(180,150,220,0.25)"}}>
+        <div style={{display:"flex",alignItems:"stretch",gap:10}}>
+          {/* Sinistra: nav */}
+          <div style={{flex:1,display:"flex",flexDirection:"column",gap:8,paddingBottom:0}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <button onClick={()=>setView("zoe")} style={{padding:"5px 12px",borderRadius:16,border:"none",
+                background:view==="zoe"?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.45)",
+                color:C.lavDeep,fontWeight:900,fontSize:13,cursor:"pointer",fontFamily:"'Nunito',sans-serif"}}>🐴 Zoe</button>
+            </div>
+            {view==="zoe"&&(
+              <div style={{display:"flex",gap:6}}>
+                {[["oggi","📅 Oggi"],["domani","🌙 Dom"]].map(([d,label])=>(
+                  <button key={d} onClick={()=>setDay(d)} style={{flex:1,padding:"7px 0",border:"none",cursor:"pointer",
+                    background:day===d?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.3)",
+                    borderRadius:"12px 12px 0 0",
+                    color:day===d?C.lavDeep:"rgba(80,50,120,0.75)",fontWeight:900,fontSize:13,
+                    fontFamily:"'Nunito',sans-serif"}}>{label}</button>
+                ))}
+              </div>
+            )}
+            {view==="mom"&&<div style={{height:8}}/>}
+          </div>
+          {/* Destra: bubble tea + cuore */}
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",paddingBottom:4}}>
             <button onClick={()=>setView(view==="mom"?"zoe":"mom")} style={{background:"transparent",border:"none",
-              cursor:"pointer",fontSize:16,opacity:0.4,color:C.textDark,padding:"4px"}}>♡</button>
-            <span style={{fontSize:26}}>🧋</span>
+              cursor:"pointer",fontSize:14,opacity:0.3,color:C.textDark,padding:"2px",alignSelf:"flex-end"}}>♡</button>
+            <KawaiiTea level={level}/>
+            <div style={{fontWeight:900,fontSize:13,color:C.lavDeep,marginTop:-4}}>{done}/{total}</div>
           </div>
         </div>
-        {view==="zoe"&&(
-          <div style={{display:"flex"}}>
-            {[["oggi","📅 Oggi"],["domani","🌙 Domani"]].map(([d,label])=>(
-              <button key={d} onClick={()=>setDay(d)} style={{flex:1,padding:"11px 0",border:"none",cursor:"pointer",
-                background:day===d?"rgba(255,255,255,0.9)":"transparent",
-                borderRadius:day===d?"14px 14px 0 0":0,
-                color:day===d?C.lavDeep:"rgba(80,50,120,0.75)",fontWeight:900,fontSize:14,
-                fontFamily:"'Nunito',sans-serif"}}>{label}</button>
-            ))}
-          </div>
-        )}
-        {view==="mom"&&<div style={{height:12}}/>}
       </div>
 
       <div style={{padding:14}}>
         {view==="zoe"&&(<>
 
-          {/* CALENDARIO */}
+          {/* CALENDARIO - max 3 visibili, scroll per altri */}
           {calEvents.length>0&&(
-            <div style={{marginBottom:12}}>
-              <SectionHeader label="In calendario oggi" color={C.skyDark}/>
-              <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+            <div style={{marginBottom:10}}>
+              <SectionHeader label="In calendario" color={C.skyDark}/>
+              <div style={{display:"flex",gap:7,overflowX:"auto",paddingBottom:4}}>
                 {calEvents.map((e,i)=>(
-                  <div key={i} style={{background:C.sky,borderRadius:12,padding:"6px 12px",display:"flex",alignItems:"center",gap:7,border:`1.5px solid ${C.skyDark}`}}>
-                    <span style={{fontSize:18}}>{e.icon}</span>
+                  <div key={i} style={{background:C.sky,borderRadius:12,padding:"6px 10px",display:"flex",
+                    alignItems:"center",gap:6,border:`1.5px solid ${C.skyDark}`,flexShrink:0}}>
+                    <span style={{fontSize:16}}>{e.icon}</span>
                     <div>
-                      <div style={{fontWeight:800,fontSize:12,color:C.textDark}}>{e.name}</div>
+                      <div style={{fontWeight:800,fontSize:11,color:C.textDark,whiteSpace:"nowrap"}}>{e.name}</div>
                       <div style={{fontSize:10,color:C.skyDark,fontWeight:700}}>{e.time}</div>
                     </div>
                   </div>
@@ -325,69 +334,57 @@ export default function ZoeApp(){
             </div>
           )}
 
-          {/* COACH + BUBBLE TEA fianco a fianco */}
-          <div style={{display:"flex",gap:10,marginBottom:12}}>
-            <div style={{background:C.white,borderRadius:20,padding:"12px",flex:1,
-              boxShadow:"0 3px 16px rgba(180,150,220,0.15)",border:`1.5px solid ${C.lav}`}}>
-              <div style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:8}}>
-                <Bunny mood={capyMood}/>
-                <div style={{background:C.lav,borderRadius:"4px 14px 14px 14px",padding:"9px 11px",flex:1,fontSize:12,color:C.textDark,lineHeight:1.5}}>
-                  {chatMessages.length===0
-                    ?<><span style={{fontWeight:900,color:C.lavDeep,display:"block",marginBottom:2}}>💬 Frase del giorno</span><span style={{fontStyle:"italic"}}>{QUOTES[quoteIdx]}</span></>
-                    :<>{chatMessages[chatMessages.length-1].content}</>
-                  }
-                </div>
-              </div>
-              {chatMessages.length>1&&(
-                <div style={{maxHeight:90,overflowY:"auto",display:"flex",flexDirection:"column",gap:5,marginBottom:7}}>
-                  {chatMessages.slice(0,-1).map((m,i)=>(
-                    <div key={i} style={{alignSelf:m.role==="user"?"flex-end":"flex-start",
-                      background:m.role==="user"?C.lavDark:C.white,color:m.role==="user"?C.white:C.textDark,
-                      padding:"4px 9px",borderRadius:10,fontSize:11,maxWidth:"85%",
-                      border:m.role==="assistant"?`1px solid ${C.lav}`:"none"}}>{m.content}</div>
-                  ))}
-                  {chatLoading&&<div style={{fontSize:16}}>🐰💭</div>}
-                </div>
-              )}
-              <div style={{display:"flex",gap:6}}>
-                <input value={chatInput} onChange={e=>setChatInput(e.target.value)}
-                  onKeyDown={e=>e.key==="Enter"&&sendChat()} placeholder="Scrivi al coach..."
-                  style={{flex:1,padding:"7px 10px",borderRadius:10,border:`1.5px solid ${C.lav}`,
-                    outline:"none",fontFamily:"'Nunito',sans-serif",fontSize:12,background:C.bg}}/>
-                <button onClick={sendChat} disabled={chatLoading} style={{padding:"7px 12px",borderRadius:10,
-                  border:"none",background:C.lavDark,color:C.white,fontWeight:900,cursor:"pointer",fontSize:14}}>→</button>
+          {/* CHAT COACH - area unica */}
+          <div style={{background:C.white,borderRadius:20,padding:"14px",marginBottom:12,
+            boxShadow:"0 3px 16px rgba(180,150,220,0.15)",border:`1.5px solid ${C.lav}`}}>
+            <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
+              <Bunny mood={capyMood}/>
+              <div style={{background:C.lav,borderRadius:"4px 16px 16px 16px",padding:"12px 14px",flex:1,
+                fontSize:15,color:C.textDark,lineHeight:1.6,minHeight:60}}>
+                {chatMessages.length===0
+                  ?<><span style={{fontWeight:900,color:C.lavDeep,display:"block",marginBottom:4}}>💬 Frase del giorno</span>
+                    <span style={{fontStyle:"italic"}}>{QUOTES[quoteIdx]}</span></>
+                  :<span>{chatMessages[chatMessages.length-1].content}</span>
+                }
               </div>
             </div>
-
-            {/* Bubble tea */}
-            <div style={{background:C.white,borderRadius:20,padding:"12px 10px",
-              boxShadow:"0 3px 16px rgba(180,150,220,0.15)",border:`1.5px solid ${C.lav}`,
-              display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minWidth:85}}>
-              <KawaiiTea level={level}/>
-              <div style={{fontWeight:900,fontSize:16,color:C.textDark,marginTop:4}}>{done}/{total}</div>
-              <div style={{marginTop:5}}>
-                {(!vacation&&!essentialsDone)
-                  ?<span style={{fontSize:10,fontWeight:900,color:C.red,background:"#FFF0F0",padding:"2px 8px",borderRadius:8}}>🔒</span>
-                  :<span style={{fontSize:10,fontWeight:900,color:C.mintDark,background:C.mint,padding:"2px 8px",borderRadius:8}}>✅</span>}
+            {chatMessages.length>1&&(
+              <div style={{maxHeight:120,overflowY:"auto",display:"flex",flexDirection:"column",gap:6,marginBottom:10}}>
+                {chatMessages.slice(0,-1).map((m,i)=>(
+                  <div key={i} style={{alignSelf:m.role==="user"?"flex-end":"flex-start",
+                    background:m.role==="user"?C.lavDark:C.lav,color:m.role==="user"?C.white:C.textDark,
+                    padding:"7px 12px",borderRadius:12,fontSize:14,maxWidth:"85%"}}>{m.content}</div>
+                ))}
+                {chatLoading&&<div style={{fontSize:18}}>🐰💭</div>}
               </div>
+            )}
+            <div style={{display:"flex",gap:8}}>
+              <input value={chatInput} onChange={e=>setChatInput(e.target.value)}
+                onKeyDown={e=>e.key==="Enter"&&sendChat()} placeholder="Scrivi al coach..."
+                style={{flex:1,padding:"10px 14px",borderRadius:12,border:`1.5px solid ${C.lav}`,
+                  outline:"none",fontFamily:"'Nunito',sans-serif",fontSize:15,background:C.bg}}/>
+              <button onClick={sendChat} disabled={chatLoading} style={{padding:"10px 16px",borderRadius:12,
+                border:"none",background:C.lavDark,color:C.white,fontWeight:900,cursor:"pointer",fontSize:16}}>→</button>
             </div>
           </div>
 
-          {/* MATTINA */}
-          {mattinaTasks.length>0&&(<>
-            <SectionHeader label="☀️ Mattina" color={C.yellDark}/>
-            <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:14}}>
-              {mattinaTasks.map((t,i)=><TaskRow key={t.id} task={t} idx={i}/>)}
+          {/* TASK IN DOPPIA COLONNA */}
+          <div style={{display:"flex",gap:8,marginBottom:14,alignItems:"flex-start"}}>
+            {/* MATTINA */}
+            <div style={{flex:1}}>
+              <SectionHeader label="☀️ Mattina" color={C.yellDark}/>
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {mattinaTasks.map((t,i)=><TaskRow key={t.id} task={t} idx={i}/>)}
+              </div>
             </div>
-          </>)}
-
-          {/* SERA */}
-          {seraTasks.length>0&&(<>
-            <SectionHeader label="🌙 Sera" color={C.lavDark}/>
-            <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:14}}>
-              {seraTasks.map((t,i)=><TaskRow key={t.id} task={t} idx={i+3}/>)}
+            {/* SERA */}
+            <div style={{flex:1}}>
+              <SectionHeader label="🌙 Sera" color={C.lavDark}/>
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {seraTasks.map((t,i)=><TaskRow key={t.id} task={t} idx={i+3}/>)}
+              </div>
             </div>
-          </>)}
+          </div>
 
           {/* MAMMA */}
           <div style={{textAlign:"center",paddingBottom:24,marginTop:8}}>
