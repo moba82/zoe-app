@@ -278,37 +278,29 @@ export default function ZoeApp(){
       <ConfettiBlast active={confetti}/>
       {loading&&<div style={{position:"fixed",inset:0,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",zIndex:999,fontSize:48}}>🌈</div>}
 
-      {/* HEADER: calendario sinistra, bubble tea destra */}
+      {/* HEADER */}
       <div style={{background:"linear-gradient(135deg,#FFB8D5,#FFD5B0,#FFF5B0,#C8F5E0,#C8EEFF,#E8D0FF)",
-        padding:"10px 12px 10px",boxShadow:"0 4px 20px rgba(180,150,220,0.25)"}}>
+        padding:"10px 12px 10px",boxShadow:"0 4px 20px rgba(180,150,220,0.25)",position:"relative"}}>
+        <button onClick={()=>setView(view==="mom"?"zoe":"mom")} style={{position:"absolute",top:8,right:10,
+          background:"transparent",border:"none",cursor:"pointer",fontSize:14,opacity:0.3,color:C.textDark}}>♡</button>
         <div style={{display:"flex",alignItems:"stretch",gap:10}}>
-
-          {/* SINISTRA: nav + calendario 3 giorni */}
-          <div style={{flex:1,display:"flex",flexDirection:"column",gap:6}}>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <button onClick={()=>setView("zoe")} style={{padding:"4px 12px",borderRadius:14,border:"none",
-                background:view==="zoe"?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.4)",
-                color:C.lavDeep,fontWeight:900,fontSize:12,cursor:"pointer",fontFamily:"'Nunito',sans-serif"}}>🐴 Zoe</button>
-              <button onClick={()=>setView(view==="mom"?"zoe":"mom")} style={{background:"transparent",border:"none",
-                cursor:"pointer",fontSize:13,opacity:0.3,color:C.textDark}}>♡</button>
-            </div>
-
-            {/* Calendario 3 giorni stile foto */}
-            <div style={{display:"flex",flexDirection:"column",gap:4}}>
-              {calEvents.map((day,di)=>(
+          <div style={{flex:1,display:"flex",flexDirection:"column",gap:5}}>
+            <button onClick={()=>setView("zoe")} style={{padding:"4px 12px",borderRadius:14,border:"none",alignSelf:"flex-start",
+              background:view==="zoe"?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.4)",
+              color:C.lavDeep,fontWeight:900,fontSize:12,cursor:"pointer",fontFamily:"'Nunito',sans-serif"}}>🐴 Zoe</button>
+            <div style={{display:"flex",flexDirection:"column",gap:3}}>
+              {(calEvents||[]).map((day,di)=>(
                 <div key={di}>
-                  <div style={{fontWeight:900,fontSize:11,color:C.lavDeep,marginBottom:2}}>{day.label}</div>
+                  <div style={{fontWeight:900,fontSize:11,color:C.lavDeep,marginBottom:1}}>{day.label}</div>
                   {day.events.length===0
-                    ? <div style={{fontSize:10,color:C.textLight,fontStyle:"italic",marginBottom:2}}>Nessun impegno</div>
-                    : day.events.map((e,ei)=>(
-                      <div key={ei} style={{
-                        background: ei===0?"rgba(255,255,255,0.85)":"rgba(255,255,255,0.6)",
-                        borderRadius:8,padding:"3px 8px",marginBottom:2,
-                        display:"flex",alignItems:"center",gap:5}}>
-                        <span style={{fontSize:12}}>{e.icon}</span>
-                        <span style={{fontSize:11,fontWeight:700,color:C.textDark,
-                          whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:120}}>{e.name}</span>
-                        {e.time&&<span style={{fontSize:10,color:C.lavDark,marginLeft:"auto",flexShrink:0}}>{e.time}</span>}
+                    ?<div style={{fontSize:10,color:C.textLight,fontStyle:"italic",marginBottom:1}}>Nessun impegno</div>
+                    :day.events.map((e,ei)=>(
+                      <div key={ei} style={{background:ei===0?"rgba(255,255,255,0.85)":"rgba(255,255,255,0.6)",
+                        borderRadius:7,padding:"2px 7px",marginBottom:2,display:"flex",alignItems:"center",gap:4}}>
+                        <span style={{fontSize:11}}>{e.icon}</span>
+                        <span style={{fontSize:10,fontWeight:700,color:C.textDark,
+                          whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:110}}>{e.name}</span>
+                        {e.time&&<span style={{fontSize:9,color:C.lavDark,marginLeft:"auto",flexShrink:0}}>{e.time}</span>}
                       </div>
                     ))
                   }
@@ -316,14 +308,17 @@ export default function ZoeApp(){
               ))}
             </div>
           </div>
-
-          {/* DESTRA: bubble tea grande */}
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-            <KawaiiTea level={level}/>
-            <div style={{fontWeight:900,fontSize:14,color:C.lavDeep,marginTop:-4}}>{done}/{total}</div>
-            {(!vacation&&!essentialsDone)
-              ?<span style={{fontSize:9,fontWeight:900,color:C.red,background:"#FFF0F0",padding:"1px 7px",borderRadius:8,marginTop:3}}>🔒</span>
-              :<span style={{fontSize:9,fontWeight:900,color:C.mintDark,background:C.mint,padding:"1px 7px",borderRadius:8,marginTop:3}}>✅</span>}
+          <div style={{display:"flex",gap:4,alignItems:"flex-end",paddingRight:18}}>
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+              <span style={{fontSize:9,fontWeight:900,color:C.yellDark}}>☀️</span>
+              <KawaiiTea level={Math.round((mattinaTasks.filter(t=>t.done).length/Math.max(mattinaTasks.length,1))*100)}/>
+              <div style={{fontSize:10,fontWeight:900,color:C.lavDeep,marginTop:-2}}>{mattinaTasks.filter(t=>t.done).length}/{mattinaTasks.length}</div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+              <span style={{fontSize:9,fontWeight:900,color:C.lavDark}}>🌙</span>
+              <KawaiiTea level={Math.round((seraTasks.filter(t=>t.done).length/Math.max(seraTasks.length,1))*100)}/>
+              <div style={{fontSize:10,fontWeight:900,color:C.lavDeep,marginTop:-2}}>{seraTasks.filter(t=>t.done).length}/{seraTasks.length}</div>
+            </div>
           </div>
         </div>
       </div>
